@@ -39,8 +39,13 @@ Particle * ReadBodies(const char *path);
 
 double GravitationalForce(const Particle *B1, const Particle *B2);
 
+Vector NetGravitationalForce(Particle *PA, int n, int index);
+
 /* Update the position, velocity, and acceleration of each particle */
 void UpdateParticles(Particle *Bodies, int n);
+
+/* render the particles */
+void RenderParticles(Particle *P, int n, SDL_Texture *texture);
 
 /* find the gravitational force between two bodies */
 double GravitationalForce(const Particle *B1, const Particle *B2);

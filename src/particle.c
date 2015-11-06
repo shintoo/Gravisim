@@ -42,3 +42,14 @@ void UpdateParticles(Particle *PA, int n) {
 		PA[i].position.y += PA[i].velocity.y;
 	}
 }
+
+void RenderParticles(Particle *P, int n, SDL_Texture *texture, SDL_Renderer *r) {
+	SDL_Rect src = {0, 0, 8, 8};
+	SDL_Rect dst;
+	for (int i = 0; i < n; i++) {
+		dst.x = P->position.x;
+		dst.y = P->position.y;
+		dst.w = dst.h = 2 * P->properties.radius;
+		SDL_RenderCopy(r, texture, &src, &dst);
+	}
+}
