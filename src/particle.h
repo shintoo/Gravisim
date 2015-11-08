@@ -2,8 +2,10 @@
 #define PARTICLE_H
 
 #include <math.h>
+#include <SDL2/SDL.h>
 
 #define SQUARE(X) ((X) * (X))
+#define dabs(D) ((D) > 0 ? (D) : 0 - (D))
 
 #define G 6.67300E-11
 
@@ -34,6 +36,8 @@ typedef struct s_particle {
 
 } Particle;
 
+Particle * MakeParticleArray(int n);
+
 /* read an array of bodies from a file */
 Particle * ReadBodies(const char *path);
 
@@ -45,7 +49,7 @@ Vector NetGravitationalForce(Particle *PA, int n, int index);
 void UpdateParticles(Particle *Bodies, int n);
 
 /* render the particles */
-void RenderParticles(Particle *P, int n, SDL_Texture *texture);
+void RenderParticles(Particle *P, int n, SDL_Texture *texture, SDL_Renderer *r);
 
 /* find the gravitational force between two bodies */
 double GravitationalForce(const Particle *B1, const Particle *B2);
