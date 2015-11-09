@@ -9,6 +9,10 @@
 
 #define G 6.67300E-11
 
+#define SCALE_RATIO 56696980
+#define SCALE_DOWN(X) ((X) / SCALE_RATIO)
+#define SCALE_UP(X) ((X) * SCALE_RATIO)
+
 typedef struct s_vector {
 	double x;
 	double y;

@@ -6,18 +6,15 @@
 #define SCREEN_WIDTH  1600
 #define SCREEN_HEIGHT 900
 
-#define SCALE_RATIO 56696980
 
-#define SCALE_DOWN(X) ((X) / SCALE_RATIO)
-#define SCALE_UP(X) ((X) * SCALE_RATIO)
 
 SDL_Window * MakeWindow(int w, int h);
 SDL_Renderer * MakeRenderer(SDL_Window *win);
 SDL_Texture * LoadTexture(SDL_Renderer *r, const char *p);
 void UpdateCamera(const uint8_t *ks, SDL_Rect *C);
 int main(void) {
-	int frame = 1;
 	SDL_Texture *circle;
+	SDL_Texture *bg;
 	SDL_Window *win;
 	SDL_Renderer *renderer;
 	SDL_Rect Camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -34,23 +31,31 @@ int main(void) {
 	const uint8_t *KeyboardState = SDL_GetKeyboardState(NULL);
 
 	circle = LoadTexture(renderer, "img/circle.png");
+	bg = LoadTexture(renderer, "img/bg.png");
+
 	/* end */
 
-	ParticleSystem *PS = LoadParticleSystem("ex/solarsystem.grv");
-
+//	ParticleSystem *PS = LoadParticleSystem("ex/solarsystem.grv");
+	ParticleSystem *PS = NewParticleSystem();
+	AddParticle(PS, 100, 8, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 2, -5, 0, 0);
+	AddParticle(PS, 1000, 12, SCREEN_WIDTH / 2 + 200, SCREEN_HEIGHT / 2 - 50, -5, -20, 0, 0);
+	AddParticle(PS, 10000000, 16, SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 150, -20, -1, 0, 0);
+	AddParticle(PS, 1000000000000000, 64, 1, 1, 5, 1, 0, 0);
 	printf("count: %d\n", PS->count);
 	for (int i = 0; i < PS->count; i++) {
-		printf("mass %d: %g at {%g, %g}\n", i, PS->particles[i].properties.mass, PS->particles[i].position.x, PS->particles[i].position.y);
+		printf("mass %d: %g at {%g, %g}\n",
+			i, PS->particles[i].properties.mass,
+			PS->particles[i].position.x, PS->particles[i].position.y);
 	}
 
 	while (!KeyboardState[SDL_SCANCODE_Q]) {
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 		SDL_RenderClear(renderer);
-
+		SDL_RenderCopy(renderer, bg, NULL, NULL);
 		UpdateCamera(KeyboardState, &Camera);
 
 		if (KeyboardState[SDL_SCANCODE_U]) {
-		UpdateParticleSystem(PS);
+			UpdateParticleSystem(PS);
 		}
 
 		RenderParticleSystem(PS, circle, renderer, &Camera);

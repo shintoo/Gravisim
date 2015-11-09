@@ -59,14 +59,7 @@ Vector NetGravitationalForce(Particle *PA, int n, int index) {
 
 		F.x = Fg * cos(theta);
 		F.y = Fg * sin(theta);
-/*
-		if (PA[index].position.x > PA[i].position.x) {
-			F.x = 0 - F.x;
-		}
-		if (PA[index].position.y > PA[i].position.y) {
-			F.y = 0 - F.y;
-		}
-*/
+
 		printf(" F%d%d:\t\t{%g, %g}, %g\n", i, index, F.x, F.y, theta);
 		ret.x += F.x;
 		ret.y += F.y;
@@ -74,6 +67,12 @@ Vector NetGravitationalForce(Particle *PA, int n, int index) {
 
 	return ret;
 }
+
+/*
+	coalesce()
+		find sum of areas
+		calculate new radius
+*/
 
 ParticleSystem * NewParticleSystem(void) {
 	ParticleSystem *ret;
@@ -125,9 +124,10 @@ void UpdateParticleSystem(ParticleSystem *S) {
 void RenderParticleSystem(ParticleSystem *S, SDL_Texture *texture, SDL_Renderer *r, SDL_Rect *Camera) {
 	Particle *P = S->particles;
 	SDL_Rect dst;
+	SDL_SetRenderDrawColor(r, 0, 255, 255, 255);
 	for (int i = 0; i < S->count; i++) {
-		dst.x = P[i].position.x / 1000 - P[i].properties.radius - Camera->x;
-		dst.y = P[i].position.y / 1000 - P[i].properties.radius - Camera->y;
+		dst.x = P[i].position.x - P[i].properties.radius - Camera->x;
+		dst.y = P[i].position.y  - P[i].properties.radius - Camera->y;
 		dst.w = dst.h = 2 * P[i].properties.radius;
 		if (P[i].properties.radius == 1) {
 			SDL_RenderDrawPoint(r, dst.x, dst.y);
