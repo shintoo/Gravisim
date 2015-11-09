@@ -36,28 +36,31 @@ typedef struct s_particle {
 
 } Particle;
 
-Particle * MakeParticleArray(int n);
+typedef struct _particle_system {
+	Particle *particles;
+	unsigned int size;
+	unsigned int count;
+} ParticleSystem;
 
-/* read an array of bodies from a file */
-Particle * ReadBodies(const char *path);
+ParticleSystem * NewParticleSystem(void);
+
+void AddParticle(ParticleSystem *PS, double m, double r, double x, double y, double vx, double vy, double ax, double ay);
+
+void DestroyParticleSystem(ParticleSystem *PS);
+
+ParticleSystem * LoadParticleSystem(const char *path);
 
 double GravitationalForce(const Particle *B1, const Particle *B2);
 
 Vector NetGravitationalForce(Particle *PA, int n, int index);
 
 /* Update the position, velocity, and acceleration of each particle */
-void UpdateParticles(Particle *Bodies, int n);
+void UpdateParticleSystem(ParticleSystem *s);
 
 /* render the particles */
-void RenderParticles(Particle *P, int n, SDL_Texture *texture, SDL_Renderer *r);
+void RenderParticleSystem(ParticleSystem *S, SDL_Texture *texture, SDL_Renderer *r, SDL_Rect *Camera);
 
 /* find the gravitational force between two bodies */
 double GravitationalForce(const Particle *B1, const Particle *B2);
-
-/* main loop, UpdateBodies(), SDL stuff, etc */
-void RunSim(Particle *Bodies);
-
-/* Delete all the bodies, end the SDL stuff */
-void EndSim(Particle *Bodies);
 
 #endif
