@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <stdbool.h>
 #include "particle.h"
 
 #define SCREEN_WIDTH  1600
@@ -18,7 +19,7 @@ int main(void) {
 	SDL_Window *win;
 	SDL_Renderer *renderer;
 	SDL_Rect Camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-
+	bool pause = false;
 
 	SDL_Init(SDL_INIT_VIDEO);
 	IMG_Init(IMG_INIT_PNG);
@@ -38,8 +39,8 @@ int main(void) {
 //	ParticleSystem *PS = LoadParticleSystem("ex/solarsystem.grv");
 	ParticleSystem *PS = NewParticleSystem();
 	AddParticle(PS, 100, 8, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 2, -5, 0, 0);
-	AddParticle(PS, 1000, 12, SCREEN_WIDTH / 2 + 200, SCREEN_HEIGHT / 2 - 50, -5, -20, 0, 0);
-	AddParticle(PS, 10000000, 16, SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 150, -20, -1, 0, 0);
+	AddParticle(PS, 1000, 12, SCREEN_WIDTH / 2 + 200, SCREEN_HEIGHT / 2 - 50, -5, -10, 0, 0);
+	AddParticle(PS, 10000000, 16, SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT / 2 - 150, -10, -1, 0, 0);
 	AddParticle(PS, 1000000000000000, 64, 1, 1, 5, 1, 0, 0);
 	printf("count: %d\n", PS->count);
 	for (int i = 0; i < PS->count; i++) {
@@ -54,7 +55,7 @@ int main(void) {
 		SDL_RenderCopy(renderer, bg, NULL, NULL);
 		UpdateCamera(KeyboardState, &Camera);
 
-		if (KeyboardState[SDL_SCANCODE_U]) {
+		if (!KeyboardState[SDL_SCANCODE_P]) {
 			UpdateParticleSystem(PS);
 		}
 
