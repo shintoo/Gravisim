@@ -19,7 +19,7 @@ int main(void) {
 	SDL_Window *win;
 	SDL_Renderer *renderer;
 	SDL_Rect Camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-	TTF_Font *Font;
+
 	unsigned int frame = 1;
 
 
