@@ -19,7 +19,7 @@ ParticleSystem * LoadParticleSystem(const char *path) {
 
 	fread(&ret->count, sizeof(unsigned int), 1, src);
 	ret->particles = malloc(ret->count * sizeof(Particle) * 2);
-	fread(ret->particles, sizeof(Particle), ret->count, src);
+	fread(ret->particles, sizeof(Particle), ret->count + 1, src);
 	ret->size = ret->count * 2;
 
 	fclose(src);
@@ -74,10 +74,13 @@ Vector NetGravitationalForce(Particle *PA, int n, int index) {
 		calculate new radius
 */
 
-ParticleSystem * NewParticleSystem(void) {
+ParticleSystem * NewParticleSystem(SDL_Renderer *r) {
 	ParticleSystem *ret;
 
 	ret = malloc(sizeof(ParticleSystem));
+
+	ret->Font = TTF_OpenFont("assets/fonts/font.ttf", 24);
+	ret->renderer = r;
 	ret->particles = malloc(5 * sizeof(Particle));
 	ret->size = 5;
 	ret->count = 0;
@@ -85,14 +88,26 @@ ParticleSystem * NewParticleSystem(void) {
 }
 
 void AddParticle(ParticleSystem *PS, double m, double r, double x, double y, double vx, double vy, double ax, double ay) {
-	PS->particles[PS->count].properties.mass = m;
-	PS->particles[PS->count].properties.radius = r;
-	PS->particles[PS->count].position.x = x;
-	PS->particles[PS->count].position.y = y;
-	PS->particles[PS->count].velocity.x = vx;
-	PS->particles[PS->count].velocity.y = vy;
-	PS->particles[PS->count].acceleration.x = ax;
-	PS->particles[PS->count].acceleration.y = ay;
+	Particle *P = PS->particles + PS->count;
+	P->properties.mass = m;
+	P->properties.radius = r;
+	P->position.x = x;
+	P->position.y = y;
+	P->velocity.x = vx;
+	P->velocity.y = vy;
+	P->acceleration.x = ax;
+	P->acceleration.y = ay;
+	
+	char infotext[80];
+	sprintf(infotext, "#%d\nmass:\t%g\nradius:\t%g", PS->count, P->properties.mass, P->properties.radius);
+	SDL_Color Red = {200, 10, 10};
+	SDL_Surface *surface = TTF_RenderText_Solid(PS->Font, "#%d\nmass:\t%g\nradius:\t%g", Red);
+	P->InfoText.texture = SDL_CreateTextureFromSurface(PS->renderer, surface);
+	SDL_FreeSurface(surface);
+	P->InfoText.rect.x = x + r;
+	P->InfoText.rect.y = y + r;
+	P->InfoText.rect.w = 80;
+	P->InfoText.rect.h = 80;
 
 	PS->count++;
 	if (PS->count == PS->size) {
@@ -121,18 +136,28 @@ void UpdateParticleSystem(ParticleSystem *S) {
 	}
 }
 
-void RenderParticleSystem(ParticleSystem *S, SDL_Texture *texture, SDL_Renderer *r, SDL_Rect *Camera) {
+void RenderParticleSystem(ParticleSystem *S, SDL_Texture *texture, SDL_Renderer *r, SDL_Rect *Camera, double scale) {
 	Particle *P = S->particles;
 	SDL_Rect dst;
 	SDL_SetRenderDrawColor(r, 0, 255, 255, 255);
 	for (int i = 0; i < S->count; i++) {
-		dst.x = P[i].position.x - P[i].properties.radius - Camera->x;
-		dst.y = P[i].position.y  - P[i].properties.radius - Camera->y;
-		dst.w = dst.h = 2 * P[i].properties.radius;
-		if (P[i].properties.radius == 1) {
+		dst.x = (P[i].position.x / scale) - P[i].properties.radius - Camera->x;
+		dst.y = (P[i].position.y / scale)  - P[i].properties.radius - Camera->y;
+		dst.w = dst.h = 2 * (P[i].properties.radius / scale * scale);
+		if (P[i].properties.radius <= 1) {
 			SDL_RenderDrawPoint(r, dst.x, dst.y);
+			SDL_SetRenderDrawColor(r, 255, 0, 0, 255);
+			for (int d = -1; d < i; d++) {
+				SDL_RenderDrawPoint(r, dst.x + (d * 3) + 3, dst.y - 4);
+			}
+			SDL_SetRenderDrawColor(r, 0, 255, 255, 255);
 		} else {
 			SDL_RenderCopy(r, texture, NULL, &dst);
+			SDL_SetRenderDrawColor(r, 255, 0, 0, 255);
+			for (int d = -1; d < i; d++) {
+				SDL_RenderDrawPoint(r, dst.x + (d * 3) - 3, dst.y - P[i].properties.radius - 4);
+			}
 		}
+		SDL_RenderCopy(r, P[i].InfoText.texture, NULL, &P[i].InfoText.rect);
 	}
 }

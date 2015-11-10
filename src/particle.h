@@ -3,13 +3,14 @@
 
 #include <math.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #define SQUARE(X) ((X) * (X))
 #define dabs(D) ((D) > 0 ? (D) : 0 - (D))
 
 #define G 6.67300E-11
 
-#define SCALE_RATIO 56696980
+#define SCALE_RATIO ((double) 5671980)
 #define SCALE_DOWN(X) ((X) / SCALE_RATIO)
 #define SCALE_UP(X) ((X) * SCALE_RATIO)
 
@@ -38,15 +39,22 @@ typedef struct s_particle {
 
 	Vector NetGravitationalForce;
 
+	struct {
+		SDL_Texture *texture;
+		SDL_Rect rect;
+	} InfoText;
+
 } Particle;
 
 typedef struct _particle_system {
 	Particle *particles;
 	unsigned int size;
 	unsigned int count;
+	TTF_Font *Font;
+	SDL_Renderer *renderer;
 } ParticleSystem;
 
-ParticleSystem * NewParticleSystem(void);
+ParticleSystem * NewParticleSystem(SDL_Renderer *r);
 
 void AddParticle(ParticleSystem *PS, double m, double r, double x, double y, double vx, double vy, double ax, double ay);
 
@@ -62,7 +70,7 @@ Vector NetGravitationalForce(Particle *PA, int n, int index);
 void UpdateParticleSystem(ParticleSystem *s);
 
 /* render the particles */
-void RenderParticleSystem(ParticleSystem *S, SDL_Texture *texture, SDL_Renderer *r, SDL_Rect *Camera);
+void RenderParticleSystem(ParticleSystem *S, SDL_Texture *texture, SDL_Renderer *r, SDL_Rect *Camera, double scale);
 
 /* find the gravitational force between two bodies */
 double GravitationalForce(const Particle *B1, const Particle *B2);
