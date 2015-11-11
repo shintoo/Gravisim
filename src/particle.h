@@ -41,7 +41,7 @@ typedef struct s_particle {
 
 	struct {
 		SDL_Texture *texture;
-		SDL_Rect rect;
+//		SDL_Rect rect;
 	} InfoText;
 
 } Particle;

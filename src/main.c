@@ -6,16 +6,20 @@
 #include "particle.h"
 #include "constants.h"
 
-#define SCREEN_WIDTH  1600
-#define SCREEN_HEIGHT 900
+#define SCREEN_WIDTH  1366
+#define SCREEN_HEIGHT 768
 
 SDL_Window * MakeWindow(int w, int h);
 SDL_Renderer * MakeRenderer(SDL_Window *win);
 SDL_Texture * LoadTexture(SDL_Renderer *r, const char *p);
+void ShowPause(SDL_Renderer *r);
 void UpdateCamera(const uint8_t *ks, SDL_Rect *C);
+
 int main(void) {
+	/* put circle in ParticleSystem */
 	SDL_Texture *circle;
 	SDL_Texture *bg;
+	/* Wrap this */
 	SDL_Window *win;
 	SDL_Renderer *renderer;
 	SDL_Rect Camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
@@ -45,6 +49,8 @@ int main(void) {
 	AddParticle(PS, 10000000000000, 64, SCREEN_WIDTH, 1, -4, 5, 0, 0);
 	AddParticle(PS, 1000000000000000, 96, 0, 0, 0, 0, 0, 0);
 	printf("count: %d\n", PS->count);
+//	return 0;
+
 	for (int i = 0; i < PS->count; i++) {
 		printf("mass %d: %g at {%g, %g} going {%g, %g}\n",
 			i, PS->particles[i].properties.mass,
@@ -65,7 +71,9 @@ int main(void) {
 				UpdateParticleSystem(PS);
 //			}
 		}
-
+		else {
+			ShowPause(renderer);
+		}
 
 		SDL_Delay(16);
 
@@ -139,4 +147,14 @@ SDL_Texture * LoadTexture(SDL_Renderer *r, const char *p) {
 	SDL_FreeSurface(s);
 
 	return ret;
+}
+
+void ShowPause(SDL_Renderer *r) {
+	SDL_SetRenderDrawColor(r, 255, 255, 255, 50);
+	SDL_Rect PauseRects[] = {
+		{SCREEN_WIDTH / 2 - 32, SCREEN_HEIGHT / 2 - 128, 32, 128},
+		{SCREEN_WIDTH / 2 + 32, SCREEN_HEIGHT / 2 - 128, 32, 128}
+	};
+
+	SDL_RenderFillRects(r, PauseRects, 2);
 }
