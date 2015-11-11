@@ -36,8 +36,8 @@ int main(void) {
 	renderer = MakeRenderer(win);
 	const uint8_t *KeyboardState = SDL_GetKeyboardState(NULL);
 
-	circle = LoadTexture(renderer, "img/circle.png");
-	bg = LoadTexture(renderer, "img/bg.png");
+	circle = LoadTexture(renderer, "assets/img/circle.png");
+	bg = LoadTexture(renderer, "assets/img/bg.png");
 
 	/* end */
 
